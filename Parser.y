@@ -13,23 +13,24 @@ import Lexer
 %left "&&" "||" '^'
 
 %token 
-    num             { TokenNum $$ }
-    true            { TokenTrue }
-    false           { TokenFalse }
-    '+'             { TokenPlus }
-    '-'             { TokenMinus }
-    '*'             { TokenTimes }
-    "&&"            { TokenAnd }
-    "||"            { TokenOr }
-    '^'             { TokenXor }
-    '('             { TokenLParen }
-    ')'             { TokenRParen }
-    if              { TokenIf }
-    then            { TokenThen }
-    else            { TokenElse }
-    '\\'           { TokenLambda }
-    arrow           { TokenArrow }
-    var             { TokenVar $$ }
+    num         { TokenNum $$ }
+    true        { TokenTrue }
+    false       { TokenFalse }
+    '+'         { TokenPlus }
+    '-'         { TokenMinus }
+    '*'         { TokenTimes }
+    "&&"        { TokenAnd }
+    "||"        { TokenOr }
+    '^'         { TokenXor }
+    '('         { TokenLParen }
+    ')'         { TokenRParen }
+    if          { TokenIf }
+    then        { TokenThen }
+    else        { TokenElse }
+    '\\'        { TokenLambda }
+    arrow       { TokenArrow }
+    var         { TokenVar $$ }
+    ','         {TokenVirgula}
 
 %%
 
@@ -48,9 +49,14 @@ App     : Exp atom                  { App $1 $2 }
 atom    : num                       { Num $1 }
         | true                      { BTrue }
         | false                     { BFalse }
+        | '(' Exp ',' ListVar       {Tuple ($2 : $4) }
+        | var                       { Var $1}
         | '(' Exp ')'               { Paren $2 }
         | '\\' var arrow Exp        { Lam $2 $4 }
-
+        
+        
+ListVar : Exp ',' ListVar     {$1 : $3}
+        | Exp ')'           {[$1]}
 
 
 { 

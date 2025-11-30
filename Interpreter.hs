@@ -20,6 +20,7 @@ subst x s (Lam y t1) = Lam y (subst x s t1)
 subst x s (App t1 t2) = App (subst x s t1) (subst x s t2) 
 subst x s (Add t1 t2) = Add (subst x s t1) (subst x s t2) 
 subst x s (And t1 t2) = And (subst x s t1) (subst x s t2) 
+subst x s (Paren t) = Paren (subst x s t) 
 -- Completar subst para outros termos da linguagem
 
 step :: Expr -> Expr 
@@ -46,23 +47,34 @@ step (Or BTrue e2) = BTrue
 step (Or BFalse e2) = e2 
 step (Or e1 e2) = Or (step e1) e2 
 
-step (Xor BTrue BFalse) = BTrue
-step (Xor BFalse BTrue) = BTrue
+step (Xor BTrue BFalse)  = BTrue
+step (Xor BFalse BTrue)  = BTrue
+step (Xor BFalse BFalse) = BFalse
+step (Xor BTrue BTrue)   = BFalse
+
 step (Xor e1 e2) = 
     if isValue e1 then
         Xor e1 (step e2)
     else 
         Xor (step e1) e2
 
-
 step (App l@(Lam x e1) e2) = if (isValue e2) then 
                              subst x e2 e1 
                            else 
                              App l (step e2)
 
+step (App e1 e2) = App (step e1) e2
+
 step (If BTrue e2 e3) = e2
 step (If BFalse e2 e3) = e3
 step (If e1 e2 e3) = If (step e1) e2 e3
+
+step (Paren p) = p
+
+step (Tuple e)
+    = case break (not . isValue) e of
+        (_, []) -> Tuple e
+        (y, x:xs) -> Tuple (y ++ [step x] ++ xs) 
 
 step _ = error "fala baixo negue"
 
