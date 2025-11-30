@@ -7,7 +7,7 @@ isValue :: Expr -> Bool
 isValue BTrue  = True 
 isValue BFalse = True 
 isValue (Num _) = True 
-isValue (Lam _ _) = True 
+isValue (Lam _ _ _) = True 
 isValue (Tuple xs) = all isValue xs
 isValue _ = False 
 
@@ -16,10 +16,11 @@ subst x s y@(Var v) = if x == v then s else y
 subst x s (Num n) = (Num n)
 subst x s BTrue = BTrue 
 subst x s BFalse = BFalse 
-subst x s (Lam y t1) = Lam y (subst x s t1)
+subst x s (Lam y z t1) = Lam y z (subst x s t1)
 subst x s (App t1 t2) = App (subst x s t1) (subst x s t2) 
 subst x s (Add t1 t2) = Add (subst x s t1) (subst x s t2) 
 subst x s (And t1 t2) = And (subst x s t1) (subst x s t2) 
+subst x s (Times t1 t2) = Times (subst x s t1) (subst x s t2)
 subst x s (Paren t) = Paren (subst x s t) 
 -- Completar subst para outros termos da linguagem
 
@@ -58,7 +59,7 @@ step (Xor e1 e2) =
     else 
         Xor (step e1) e2
 
-step (App l@(Lam x e1) e2) = if (isValue e2) then 
+step (App l@(Lam x _ e1) e2) = if (isValue e2) then 
                              subst x e2 e1 
                            else 
                              App l (step e2)

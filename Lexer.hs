@@ -20,6 +20,9 @@ data Token = TokenNum Int
            | TokenElse
            | TokenThen
            | TokenVirgula
+           | TokenDoisPontos
+           | TokenBool
+           | TokenInt
            deriving Show 
 
 data Expr = Num Int 
@@ -34,14 +37,15 @@ data Expr = Num Int
           | Paren Expr 
           | If Expr Expr Expr 
           | Var String
-          | Lam String Expr 
+          | Lam String Ty Expr 
           | App Expr Expr 
           | Tuple [Expr]
           deriving Show 
 
-data Ty = TNum 
+data Ty = TInt 
         | TBool 
         | Tvar
+        | TFun Ty Ty
         deriving (Show, Eq) 
 
 lexer :: String -> [Token]
@@ -57,6 +61,7 @@ lexer ('\\':cs) = TokenLambda : lexer cs
 lexer ('-':'>':cs) = TokenArrow : lexer cs
 lexer ('-':cs) = TokenMinus : lexer cs 
 lexer ('^':cs) = TokenXor : lexer cs 
+lexer (':':cs) = TokenDoisPontos : lexer cs
 lexer (c:cs)    | isSpace c = lexer cs 
                 | isDigit c = lexNum (c:cs)
                 | isAlpha c = lexKw (c:cs)
@@ -71,4 +76,6 @@ lexKw cs = case span isAlpha cs of
                 ("if", rest) -> TokenIf : lexer rest
                 ("else", rest) -> TokenElse : lexer rest
                 ("then", rest) -> TokenThen : lexer rest
+                ("bool", rest) -> TokenBool : lexer rest
+                ("int", rest) -> TokenInt : lexer rest
                 (var, rest) -> TokenVar var : lexer rest 
