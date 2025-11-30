@@ -48,11 +48,18 @@ typeof ctx (Lam x tp b) = let ctx' = (x,tp) : ctx
                                  Just tr -> Just (TFun tp tr)
                                  _ -> Nothing 
                                 
-typeof ctx (App e1 e2) = case typeof ctx e1 of 
-                           Just (TFun tp tr) -> case typeof ctx e2 of 
-                                                  Just t2 | t2 == tp -> Just tr 
-                                                  _ -> Nothing 
-                           _ -> Nothing 
+typeof ctx (App e1 e2) = 
+    case typeof ctx e1 of 
+        Just (TFun tp tr) -> 
+            case typeof ctx e2 of 
+                Just t2 | t2 == tp -> Just tr 
+                _ -> Nothing 
+        _ -> Nothing 
+
+typeof ctx (Tuple xs) = 
+    case sequence (map (typeof ctx) xs) of
+        Just ts -> Just (TTuple ts)
+        Nothing -> Nothing
 
 
 typecheck :: Expr -> Expr 

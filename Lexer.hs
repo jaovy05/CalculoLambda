@@ -44,8 +44,9 @@ data Expr = Num Int
 
 data Ty = TInt 
         | TBool 
-        | Tvar
+        | TVar
         | TFun Ty Ty
+        | TTuple [Ty]
         deriving (Show, Eq) 
 
 lexer :: String -> [Token]
