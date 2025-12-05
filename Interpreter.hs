@@ -19,11 +19,15 @@ subst x s BFalse = BFalse
 subst x s (Lam y z t1) = Lam y z (subst x s t1)
 subst x s (App t1 t2) = App (subst x s t1) (subst x s t2) 
 subst x s (Add t1 t2) = Add (subst x s t1) (subst x s t2) 
+subst x s (Sub t1 t2) = Sub (subst x s t1) (subst x s t2) 
 subst x s (And t1 t2) = And (subst x s t1) (subst x s t2) 
+subst x s (Or t1 t2) = Or (subst x s t1) (subst x s t2) 
+subst x s (Xor t1 t2) = Xor (subst x s t1) (subst x s t2) 
 subst x s (Times t1 t2) = Times (subst x s t1) (subst x s t2)
 subst x s (Paren t) = Paren (subst x s t) 
+subst x s (If b e1 e2) = If (subst x s b) (subst x s e1) (subst x s e2) 
 subst x s (Proj t i) = Proj (subst x s t) i
--- Completar subst para outros termos da linguagem
+subst x s (Tuple xs) = Tuple (map (\e -> subst x s e) xs) 
 
 step :: Expr -> Expr 
 step (Add (Num n1) (Num n2)) = Num (n1 + n2)
