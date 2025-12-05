@@ -64,7 +64,7 @@ typeof ctx (Tuple xs) =
 typeof ctx (Proj t i) =
     case typeof ctx t of
         Just (TTuple ts)
-            | i >= length ts -> Just (ts !! i)
+            | i < length ts -> Just (ts !! i)
             | otherwise -> Nothing
         _ -> Nothing
 
