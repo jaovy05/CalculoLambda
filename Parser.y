@@ -10,7 +10,9 @@ import Lexer
 
 %left '+' '-'
 %left '*'
-%left "&&" "||" '^'
+%left '^'
+%left "||"
+%left "&&"
 
 %token 
     num         { TokenNum $$ }
@@ -63,7 +65,7 @@ ListVar : Exp ',' ListVar   {$1 : $3}
 
 Ty      : int                     { TInt }
         | bool                    { TBool }
-        | '(' Exp ',' TyList ')'  { TTuple ($2 : $4) }
+        | '(' Ty ',' TyList ')'  { TTuple ($2 : $4) }
 
 TyList  : Ty ',' TyList       {$1 : $3}
         | Ty                  {[$1]}
