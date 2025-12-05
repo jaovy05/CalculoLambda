@@ -23,6 +23,7 @@ data Token = TokenNum Int
            | TokenDoisPontos
            | TokenBool
            | TokenInt
+           | TokenDot 
            deriving Show 
 
 data Expr = Num Int 
@@ -40,6 +41,7 @@ data Expr = Num Int
           | Lam String Ty Expr 
           | App Expr Expr 
           | Tuple [Expr]
+          | Proj Expr Int
           deriving Show 
 
 data Ty = TInt 
@@ -63,6 +65,7 @@ lexer ('-':'>':cs) = TokenArrow : lexer cs
 lexer ('-':cs) = TokenMinus : lexer cs 
 lexer ('^':cs) = TokenXor : lexer cs 
 lexer (':':cs) = TokenDoisPontos : lexer cs
+lexer ('.':cs) = TokenDot : lexer cs
 lexer (c:cs)    | isSpace c = lexer cs 
                 | isDigit c = lexNum (c:cs)
                 | isAlpha c = lexKw (c:cs)

@@ -77,6 +77,9 @@ step (Tuple e)
         (_, []) -> Tuple e
         (y, x:xs) -> Tuple (y ++ [step x] ++ xs) 
 
+step (Proj (Tuple xs) i) = xs !! i
+step (Proj e1 i) = Proj (step e1) i
+
 step _ = error "fala baixo negue"
 
 eval :: Expr -> Expr

@@ -30,22 +30,23 @@ import Lexer
     '\\'        { TokenLambda }
     arrow       { TokenArrow }
     var         { TokenVar $$ }
-    ','         {TokenVirgula}
+    ','         { TokenVirgula }
     int         { TokenInt}
     bool        { TokenBool }
     ':'         { TokenDoisPontos }
+    '.'         { TokenDot }
 %%
 
-Exp     : App '+' App               { Add $1 $3 }
-        | App '-' App               { Sub $1 $3 }
-        | App '*' App               { Times $1 $3 }
-        | App "&&" App              { And $1 $3 }
-        | App "||" App              { Or $1 $3 }
-        | App '^' App               { Xor $1 $3 }
-        | if App then App else App  { If $2 $4 $6 }
+Exp     : Exp '+' Exp               { Add $1 $3 }
+        | Exp '-' Exp               { Sub $1 $3 }
+        | Exp '*' Exp               { Times $1 $3 }
+        | Exp "&&" Exp              { And $1 $3 }
+        | Exp "||" Exp              { Or $1 $3 }
+        | Exp '^' Exp               { Xor $1 $3 }
+        | if Exp then Exp else Exp  { If $2 $4 $6 }
         | App               { $1 }
 
-App     : Exp atom                  { App $1 $2 }
+App     : App atom                  { App $1 $2 }
         | atom                      { $1 }
 
 atom    : num                       { Num $1 }
@@ -55,7 +56,7 @@ atom    : num                       { Num $1 }
         | var                       { Var $1}
         | '(' Exp ')'               { Paren $2 }
         | '\\' var ':' Ty arrow Exp { Lam $2 $4 $6}
-
+        | Exp '.' num              { Proj $1 $3 }
         
 ListVar : Exp ',' ListVar   {$1 : $3}
         | Exp               {[$1]}
