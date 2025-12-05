@@ -61,6 +61,12 @@ typeof ctx (Tuple xs) =
         Just ts -> Just (TTuple ts)
         Nothing -> Nothing
 
+typeof ctx (Proj t i) =
+    case typeof ctx t of
+        Just (TTuple ts)
+            | i >= length ts -> Just (ts !! i)
+            | otherwise -> Nothing
+        _ -> Nothing
 
 typecheck :: Expr -> Expr 
 typecheck e = case typeof [] e of 

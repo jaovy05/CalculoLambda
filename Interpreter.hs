@@ -22,6 +22,7 @@ subst x s (Add t1 t2) = Add (subst x s t1) (subst x s t2)
 subst x s (And t1 t2) = And (subst x s t1) (subst x s t2) 
 subst x s (Times t1 t2) = Times (subst x s t1) (subst x s t2)
 subst x s (Paren t) = Paren (subst x s t) 
+subst x s (Proj t i) = Proj (subst x s t) i
 -- Completar subst para outros termos da linguagem
 
 step :: Expr -> Expr 
@@ -77,7 +78,10 @@ step (Tuple e)
         (_, []) -> Tuple e
         (y, x:xs) -> Tuple (y ++ [step x] ++ xs) 
 
-step (Proj (Tuple xs) i) = xs !! i
+step (Proj t@(Tuple xs) i) 
+    | isValue t = xs !! i
+    | otherwise = Proj (step t) i
+
 step (Proj e1 i) = Proj (step e1) i
 
 step _ = error "fala baixo negue"
