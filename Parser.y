@@ -48,6 +48,7 @@ Exp     : Exp '+' Exp               { Add $1 $3 }
 
 App     : App atom                  { App $1 $2 }
         | atom                      { $1 }
+        | App '.' num              { Proj $1 $3 }
 
 atom    : num                       { Num $1 }
         | true                      { BTrue }
@@ -56,18 +57,16 @@ atom    : num                       { Num $1 }
         | var                       { Var $1}
         | '(' Exp ')'               { Paren $2 }
         | '\\' var ':' Ty arrow Exp { Lam $2 $4 $6}
-        | Exp '.' num              { Proj $1 $3 }
         
 ListVar : Exp ',' ListVar   {$1 : $3}
         | Exp               {[$1]}
 
-Ty      : int               { TInt }
-        | bool              { TBool }
-        | '(' TyList ')'    { TTuple $2 }
-        | var               { TVar }
+Ty      : int                     { TInt }
+        | bool                    { TBool }
+        | '(' Exp ',' TyList ')'  { TTuple ($2 : $4) }
 
-TyList  : Ty ',' TyList      {$1 : $3}
-        | Ty           {[$1]}
+TyList  : Ty ',' TyList       {$1 : $3}
+        | Ty                  {[$1]}
 
 { 
 parseError :: [Token] -> a 
